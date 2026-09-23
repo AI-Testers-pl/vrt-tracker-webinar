@@ -1,0 +1,19 @@
+{
+  "name": "vrt-tracker-webinar-demo",
+  "private": true,
+  "type": "module",
+  "description": "Minimal Playwright + Visual Regression Tracker demo shown at the webinar.",
+  "scripts": {
+    "tracker:up": "docker compose up -d",
+    "tracker:down": "docker compose down",
+    "tracker:reset": "docker compose down -v",
+    "test": "playwright test",
+    "test:bug": "DEMO_BUG=1 playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.50.0"
+  },
+  "dependencies": {
+    "@visual-regression-tracker/agent-playwright": "^5.3.1"
+  }
+}

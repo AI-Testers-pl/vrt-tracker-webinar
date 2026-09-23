@@ -1,0 +1,73 @@
+# Visual Regression Tracker, local instance for the demo.
+# Requires Docker 24+ with Compose v2. Panel: localhost:8082, API: localhost:4200.
+#
+# Panel login: visual-regression-tracker@example.com / 123456 (baked into the
+# migration image's seed, not configurable via DEFAULT_USER_* env vars).
+#
+# Versions pinned, never :latest. Current tags: https://hub.docker.com/u/visualregressiontracker
+
+name: vrt-tracker-webinar
+
+services:
+  postgres:
+    image: postgres:12-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: vrt
+      POSTGRES_PASSWORD: vrt
+      POSTGRES_DB: vrt_db
+    ports:
+      - '${VRT_DB_PORT:-5432}:5432'
+    volumes:
+      - vrt-pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vrt -d vrt_db']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Sets up the schema and the default account, then exits. Exited (0) is expected.
+  migration:
+    image: visualregressiontracker/migration:5.3.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://vrt:vrt@postgres:5432/vrt_db
+    restart: on-failure
+
+  api:
+    image: visualregressiontracker/api:5.6.1
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://vrt:vrt@postgres:5432/vrt_db
+      APP_FRONTEND_URL: http://localhost:${VRT_UI_PORT:-8082}
+      JWT_SECRET: local-dev-only-change-me
+      JWT_LIFE_TIME: 1d
+      BODY_PARSER_JSON_LIMIT: 5mb
+    ports:
+      - '${VRT_API_PORT:-4200}:3000'
+    volumes:
+      - vrt-images:/imageUploads
+
+  ui:
+    image: visualregressiontracker/ui:5.5.0
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      REACT_APP_API_URL: http://localhost:${VRT_API_PORT:-4200}
+      PORT: 8080
+    ports:
+      - '${VRT_UI_PORT:-8082}:8080'
+    volumes:
+      - vrt-images:/usr/share/nginx/html/static/imageUploads
+
+volumes:
+  vrt-pg-data:
+  vrt-images:

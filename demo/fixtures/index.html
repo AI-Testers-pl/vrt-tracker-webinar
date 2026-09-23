@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>VRT Tracker demo page</title>
+<style>
+  :root { color-scheme: light; }
+  body { margin: 0; font-family: system-ui, sans-serif; background: #f4f5f7; color: #1a1d29; }
+  header { display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 32px; background: #1a1d29; color: #fff; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; }
+  .logo svg { width: 28px; height: 28px; }
+  nav { display: flex; gap: 24px; font-size: 15px; }
+  nav a { color: #cbd2e0; text-decoration: none; }
+  main { padding: 48px 32px; max-width: 720px; }
+  h1 { font-size: 32px; margin: 0 0 12px; }
+  p { line-height: 1.6; color: #4a5066; }
+  .card { margin-top: 24px; padding: 20px; background: #fff; border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+  /* Injected regression: hides the logo but keeps its box, so the header
+     keeps its size and the tracker can still compute a pixel diff. */
+  body.bug-header-logo .logo svg,
+  body.bug-header-logo .logo span { visibility: hidden; }
+</style>
+</head>
+<body>
+  <header data-testid="site-header">
+    <div class="logo" data-testid="logo">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" fill="#6d5efc"/>
+      </svg>
+      <span>VRT Demo</span>
+    </div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">Docs</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Visual Regression Tracker demo</h1>
+    <p>
+      This static page exists only so the webinar's Playwright test has something
+      to screenshot without depending on the course application.
+    </p>
+    <div class="card">
+      <p>Static content, no timers, no live data — nothing here needs a frozen clock.</p>
+    </div>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const bug = params.get('bug');
+    if (bug) document.body.classList.add('bug-' + bug);
+  </script>
+</body>
+</html>

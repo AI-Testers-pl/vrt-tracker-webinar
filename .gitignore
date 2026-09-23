@@ -1,0 +1,5 @@
+node_modules/
+demo/.env
+demo/test-results/
+demo/playwright-report/
+.DS_Store
