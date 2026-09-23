@@ -59,3 +59,9 @@ export VRT_PROJECT='VRT Webinar Demo'
 
 Pełny opis kroków i zasad klasyfikacji jest w
 [`SKILL.md`](.claude/skills/vrt-triage/SKILL.md).
+
+## Kurs AI Testers
+
+Ten webinar to fragment kursu **AI Testers**, o testach automatycznych z AI —
+w tym pełnym module o Visual Regression Testing w Playwrighcie. Szczegóły i zapisy:
+[aitesters.pl](https://aitesters.pl).
